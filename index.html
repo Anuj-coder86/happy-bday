@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Secret Birthday Adventure</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Confetti library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: linear-gradient(145deg, #f9e900 0%, #ffb347 100%);
+            color: #1e3c72;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* LOGIN GATE STYLES */
+        #loginGate {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 60px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 20px 0 #bc6c25;
+            border: 6px solid white;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        #loginGate h1 {
+            font-size: 3rem;
+            color: #d62828;
+            margin-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 4px 4px 0 #ffd966;
+        }
+
+        #loginGate p {
+            font-size: 1.8rem;
+            margin: 20px 0;
+        }
+
+        #secretInput {
+            font-size: 2rem;
+            padding: 15px 25px;
+            border: 5px solid #2a9d8f;
+            border-radius: 60px;
+            width: 80%;
+            text-align: center;
+            font-family: 'Comic Neue', cursive;
+            margin-bottom: 20px;
+        }
+
+        #loginGate button {
+            background: #e63946;
+            color: white;
+            font-size: 2rem;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 60px;
+            font-weight: bold;
+            border: 5px solid white;
+            box-shadow: 0 10px 0 #9e2a2b;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        #loginGate button:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #9e2a2b;
+        }
+
+        #errorMsg {
+            color: #d62828;
+            font-size: 1.8rem;
+            margin-top: 20px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* PUZZLE SECTION */
+        #puzzleSection {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 60px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 20px 0 #bc6c25;
+            border: 6px solid white;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        #puzzleSection h2 {
+            font-size: 3rem;
+            color: #2a9d8f;
+            margin-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 4px 4px 0 #ffd966;
+        }
+
+        #puzzleSection p {
+            font-size: 2rem;
+            margin: 20px 0;
+        }
+
+        .scrambled-word {
+            font-size: 5rem;
+            font-weight: bold;
+            letter-spacing: 15px;
+            color: #e63946;
+            text-shadow: 5px 5px 0 #ffb703;
+            margin: 30px 0;
+        }
+
+        #puzzleInput {
+            font-size: 2rem;
+            padding: 15px 25px;
+            border: 5px solid #2a9d8f;
+            border-radius: 60px;
+            width: 250px;
+            text-align: center;
+            font-family: 'Comic Neue', cursive;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        #puzzleBtn {
+            background: #2a9d8f;
+            color: white;
+            font-size: 2rem;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 60px;
+            font-weight: bold;
+            border: 5px solid white;
+            box-shadow: 0 10px 0 #1e6091;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-left: 10px;
+        }
+
+        #puzzleBtn:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #1e6091;
+        }
+
+        #puzzleFeedback {
+            font-size: 1.8rem;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* MAIN CONTENT (hidden initially) */
+        #mainContent {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border-radius: 50px 50px 30px 30px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+            border: 5px solid white;
+            width: 100%;
+        }
+
+        h1, h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 4px 4px 0 #ffd966;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #d62828;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #2a9d8f;
+            border-left: 15px solid #ffb703;
+            padding-left: 20px;
+            margin: 40px 0 20px;
+        }
+
+        .hero {
+            text-align: center;
+            background: white;
+            border-radius: 40px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 0 #e9c46a;
+            border: 3px dashed #f4a261;
+        }
+
+        .hero-img {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 8px solid #2a9d8f;
+            box-shadow: 0 15px 0 #1e6091;
+            margin: 20px auto;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .hero-img:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .badge {
+            background: #e63946;
+            color: white;
+            font-size: 1.8rem;
+            padding: 10px 25px;
+            border-radius: 60px;
+            display: inline-block;
+            transform: rotate(-3deg);
+            font-weight: bold;
+            box-shadow: 0 8px 0 #9e2a2b;
+        }
+
+        /* Photo Cards (flip) */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 350px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-front, .flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 30px;
+            box-shadow: 0 15px 0 #bc6c25;
+            border: 4px solid white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .flip-front {
+            background: #f77f00;
+        }
+
+        .flip-front img {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 3px solid white;
+            margin-bottom: 10px;
+        }
+
+        .flip-front p {
+            font-weight: bold;
+            color: white;
+            font-size: 1.5rem;
+            background: #003049;
+            padding: 5px 15px;
+            border-radius: 40px;
+        }
+
+        .flip-back {
+            background: #2a9d8f;
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 1.4rem;
+            font-weight: bold;
+            word-break: break-word;
+            border: 6px solid #ffb703;
+        }
+
+        .flip-back i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        /* PERSONAL MESSAGE SECTION */
+        .personal-message {
+            text-align: center;
+            background: #cdb4db;
+            border-radius: 50px;
+            padding: 40px 30px;
+            border: 6px solid #ffafcc;
+            box-shadow: 0 15px 0 #b5838d;
+            margin: 40px 0;
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+
+        .personal-message p {
+            margin: 20px 0;
+        }
+
+        .personal-message .signature {
+            font-size: 2.2rem;
+            color: #d62828;
+            margin-top: 30px;
+        }
+
+        .confetti-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #e63946;
+            color: white;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #9e2a2b;
+            border: 4px solid white;
+            transition: 0.1s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confetti-btn:active {
+            transform: translateY(7px);
+            box-shadow: 0 3px 0 #9e2a2b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 1.3rem;
+            color: #023047;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .hero-img { width: 180px; height: 180px; }
+            #loginGate, #puzzleSection { padding: 30px; }
+            #secretInput, #puzzleInput { font-size: 1.5rem; }
+            .scrambled-word { font-size: 3.5rem; letter-spacing: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 🔒 LOGIN GATE - visible first -->
+    <div id="loginGate">
+        <h1>🎂 TOP SECRET 🎂</h1>
+        <p>This birthday mission is for one person only.</p><p style="color:#1e3c721a">(i'm not a criminal i swea-)</p>
+        <p>Identify yourself:</p>
+        <input type="text" id="secretInput" placeholder="Enter name">
+        <br>
+        <button onclick="checkSecret()">Enter</button>
+        <p id="errorMsg">Nope! Only the birthday hero can enter.</p>
+    </div>
+
+    <!-- 🧩 WORD SCRAMBLE PUZZLE (hidden until name is correct) -->
+    <div id="puzzleSection">
+        <h2>🔍 UNSCRAMBLE THE WORD</h2>
+        <p>Figure out the secret word:</p>
+        <div class="scrambled-word" id="scrambledWord">ACE</div>  <!-- Will be set dynamically -->
+        <input type="text" id="puzzleInput" placeholder="Your answer" maxlength="10">
+        <button id="puzzleBtn">Check</button>
+        <p id="puzzleFeedback"></p>
+    </div>
+
+    <!-- 🎉 MAIN BIRTHDAY CONTENT (hidden until puzzle solved) -->
+    <div id="mainContent">
+        <!-- HERO SECTION with Photo 1 -->
+        <div class="hero">
+            <span class="badge">🎂 It's a PARTY! 🎂</span>
+            <h1>HAPPY BIRTHDAY<br>Shantanu!</h1>
+            <img src="1.jpg" alt="Shantanu photo 1" class="hero-img" id="heroPhoto">
+            <p style="font-size: 1.8rem; background: #f4a261; padding: 10px 20px; border-radius: 60px; display: inline-block; border: 3px solid white;">The legend himself!</p>
+        </div>
+
+        <!-- THREE PHOTO CARDS (flippable) with inside jokes -->
+        <h2>📸 Moments That Define You</h2>
+        <div class="card-grid">
+            <!-- Card 1 (Photo 2) -->
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                <div class="flip-inner">
+                    <div class="flip-front">
+                        <img src="2.jpg" alt="Photo 2">
+                        <p>👇</p>
+                    </div>
+                    <div class="flip-back">
+                        <i class="fas fa-laugh-squint"></i>
+                        This person is also called "Abhishek" i think..
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 (Photo 3) -->
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                <div class="flip-inner">
+                    
+                    <div class="flip-back">
+                        <i class="fas fa-dragon"></i>
+                        ahem... I Dont Think You Are Supposed To See This
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3 (Use Photo 1 again, or any extra) -->
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                <div class="flip-inner">
+                    <div class="flip-front">
+                        <img src="3.jpg" alt="Another of him">
+                        <p>👇</p>
+                    </div>
+                    <div class="flip-back">
+                        <i class="fas fa-crown"></i>
+                        Ascetic image if ive ever seen one 😋 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 💌 YOUR CENTERED PERSONAL MESSAGE -->
+        <h2>💬 A Message for You</h2>
+        <div class="personal-message">
+            <p>Happy Birthday, Shantanu! 🎂</p>
+            <p>You're the coolest, funniest, and most adventurous person I know. Hope your day is as epic as you are!</p>
+            <p class="signature">Hoping to see ya soon,<br>Anuj</p>
+        </div>
+
+        <footer>
+            Made with [Ech Tee Em Ell] by Chunnu Goli | Happy Birthday, Shantanu!
+			<br>
+			<br>
+			<br>
+			<p style = "color:#9fc9001a">i know still you havent found the secret in my website 🤓</p>
+        </footer>
+    </div>
+
+    <!-- Confetti Button (hidden initially) -->
+    <button class="confetti-btn" id="confettiBtn" style="display: none;"><i class="fas fa-star"></i></button>
+
+    <script>
+        // ================= CONFIGURATION =================
+        const SECRET_NAMES = ["shantanu", "N shantanu", "shanunu","a"]; // all accepted         // What he types at the gate (his name/nickname)
+        const SCRAMBLE_WORD = "shanunu";           // The correct word (e.g., nickname, inside joke)
+        // =================================================
+
+        // Scramble function (randomly shuffle letters)
+        function scrambleWord(word) {
+            const arr = word.split('');
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr.join('');
+        }
+
+        // Set scrambled word on page load (but puzzle is hidden initially)
+        let scrambled = scrambleWord(SCRAMBLE_WORD);
+        document.getElementById('scrambledWord').innerText = scrambled;
+
+        // UI elements
+        const loginGate = document.getElementById('loginGate');
+        const puzzleSection = document.getElementById('puzzleSection');
+        const mainContent = document.getElementById('mainContent');
+        const confettiBtn = document.getElementById('confettiBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const puzzleInput = document.getElementById('puzzleInput');
+        const puzzleFeedback = document.getElementById('puzzleFeedback');
+        const puzzleBtn = document.getElementById('puzzleBtn');
+
+        // Step 1: Check name gate
+        function checkSecret() {
+    const input = document.getElementById('secretInput').value.trim();
+    // Convert input and all allowed names to lowercase for comparison
+    const lowerInput = input.toLowerCase();
+    const match = SECRET_NAMES.some(name => name.toLowerCase() === lowerInput);
+    if (match) {
+        // correct – show puzzle
+        loginGate.style.display = 'none';
+        puzzleSection.style.display = 'block';
+        errorMsg.style.display = 'none';
+        confetti({particleCount: 50, spread: 50});
+    } else {
+        errorMsg.style.display = 'block';
+    }
+}
+        window.checkSecret = checkSecret; // make function global for onclick
+
+        // Step 2: Check puzzle answer
+        puzzleBtn.addEventListener('click', function() {
+            const answer = puzzleInput.value.trim().toUpperCase();
+            if (answer === SCRAMBLE_WORD.toUpperCase()) {
+                // Correct: hide puzzle, show main content, confetti
+                puzzleSection.style.display = 'none';
+                mainContent.style.display = 'block';
+                confettiBtn.style.display = 'flex';
+                puzzleFeedback.innerText = '';
+                // Big confetti celebration
+                confetti({particleCount: 300, spread: 100, origin: {y:0.5}});
+            } else {
+                puzzleFeedback.innerText = '❌ Nope, try again!';
+                puzzleFeedback.style.color = '#e63946';
+                // Shake effect (optional)
+                puzzleInput.style.border = '5px solid #e63946';
+                setTimeout(() => puzzleInput.style.border = '5px solid #2a9d8f', 300);
+            }
+        });
+
+        // Confetti cannon (visible only after main content)
+        confettiBtn.addEventListener('click', function() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#f9e900', '#ffb347', '#e63946', '#2a9d8f', '#ffb703']
+            });
+        });
+
+        // Optional: allow pressing Enter in puzzle input
+        puzzleInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                puzzleBtn.click();
+            }
+        });
+
+        // Also allow Enter in login input
+        document.getElementById('secretInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkSecret();
+            }
+        });
+    </script>
+</body>
+</html>
